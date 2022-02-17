@@ -1,0 +1,6 @@
+virtualenv
+Pillow
+exif
+gpsphoto
+piexif
+exifread

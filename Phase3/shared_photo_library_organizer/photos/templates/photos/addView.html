@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Add View</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
+</head>
+
+<body class="m-5">
+    <div class="container">
+
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <a href="{% url 'view_collection' pk%}" class="btn btn-dark my-3">Go Back</a>
+                <div class="card">
+
+
+                    <form method='POST' action="" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="form-group m-3">
+                            <label>View Name</label>
+                            <input required name="view_name" type="text" placeholder="Enter View Name"
+                                class="form-control">
+                        </div>
+
+                        <div class="form-group m-3">
+                            <label>Conjunctive/Disjunctive</label>
+                            <select name="view_conjunctive" class="form-control">
+                                <option value='Conjunctive'>Conjunctive</option>
+                                <option value='Disjunctive'>Disjunctive</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group m-3">
+                            <label>Tags</label>
+                            <input required name="view_tags" type="text" placeholder="Enter Tags"
+                                class="form-control">
+                        </div>
+
+                        <div class="form-group m-3">
+                            <label>Start Latitude</label>
+                            <input required name="view_startLatitude" type="number" placeholder="Enter Start Latitude"
+                                class="form-control">
+                        </div>
+
+                        <div class="form-group m-3">
+                            <label>End Latitude</label>
+                            <input required name="view_endLatitude" type="number" placeholder="Enter End Latitude"
+                                class="form-control">
+                        </div>
+
+                        <div class="form-group m-3">
+                            <label>Start Longitude</label>
+                            <input required name="view_startLongitude" type="number" placeholder="Enter Start Longitude"
+                                class="form-control">
+                        </div>
+
+                        <div class="form-group m-3">
+                            <label>End Longitude</label>
+                            <input required name="view_endLongitude" type="number" placeholder="Enter End Longitude"
+                                class="form-control">
+                        </div>
+
+                        <div class="form-group m-3">
+                            <label>Start DateTime</label>
+                            <input required name="view_startTime" type="date" placeholder="Enter Start DateTime">
+                        </div>
+
+                        <div class="form-group m-3">
+                            <label>End DateTime</label>
+                            <input required name="view_endTime" type="date" placeholder="Enter End DateTime">
+                        </div>
+
+
+                        <button type='submit' class="btn btn-primary m-3">Submit</button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

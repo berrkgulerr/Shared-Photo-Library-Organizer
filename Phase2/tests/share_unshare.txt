@@ -1,0 +1,19 @@
+{"command":"login", "username":"onur", "password":"1308"}
+{"command":"collectionshare","collection_id":"0" ,"user_id":"1"}
+{"command":"collectionunshare","collection_id":"0" ,"user_id":"1"}
+{"command":"viewshare","view_id":"0" ,"user_id":"1"}
+{"command":"viewunshare","view_id":"0" ,"user_id":"1"}
+
+{"command":"login", "username":"berk", "password":"8520"}
+{"command":"collectionshare","collection_id":"0" ,"user_id":"1"}
+{"command":"collectionunshare","collection_id":"0" ,"user_id":"1"}
+{"command":"viewshare","view_id":"0" ,"user_id":"1"}
+{"command":"viewunshare","view_id":"0" ,"user_id":"1"}
+
+{"command":"login", "username":"onur", "password":"1308"}
+{"command":"collectionshare","collection_id":"0" ,"user_id":"1"}
+{"command":"viewshare","view_id":"0" ,"user_id":"1"}
+{"command":"collectionfetchphoto", "collection_id":"0", "photo_id":"0"}
+{"command":"viewfetchphoto", "view_id":"0", "photo_id":"0"}
+{"command":"photolist", "view_id":"0"}
+{"command":"logout"}

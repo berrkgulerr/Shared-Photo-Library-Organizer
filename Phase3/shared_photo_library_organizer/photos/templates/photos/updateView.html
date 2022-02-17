@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Update View</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
+</head>
+<section class="section">
+    <div class="container">
+        <a href="{% url 'dashboard_views' mycollection.id %}" class="btn btn-dark my-3">Go Back</a>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="fw-bold">Update View</h2>
+                    </div>
+                    <div class="card-body">
+                        <form action="" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="" class="form-label">View Name</label>
+                                <input type="text" Required name="view_name" value="{{ view.name }}" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label>Conjunctive/Disjunctive</label>
+                                <select name="view_conjunctive" class="form-control" data-value="{{ view.conjunctive }}">
+                                    <option value='Conjunctive'>Conjunctive</option>
+                                    <option value='Disjunctive'>Disjunctive</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">Tags</label>
+                                <input type="text" Required name="view_tags" value="{{view.tags.all|join:","}}" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">Start Latitude</label>
+                                <input type="number" Required name="view_startLatitude" value="{{ view.startLatitude }}" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">End Latitude</label>
+                                <input type="number" Required name="view_endLatitude" value="{{ view.endLatitude }}" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">Start Longitude</label>
+                                <input type="number" Required name="view_startLongitude" value="{{ view.startLongitude }}" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">End Longitude</label>
+                                <input type="number" Required name="view_endLongitude" value="{{ view.endLongitude }}" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">Start DateTime</label>
+                                <input type="date" Required name="view_startTime" value="{{ view.startTime | date:'c' }}" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">End DateTime</label>
+                                <input type="date" Required name="view_endTime" value="{{ view.endTime | date:'c' }}" class="form-control">
+                            </div>
+
+                            <button type="submit" class="btn btn-warning">Update</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

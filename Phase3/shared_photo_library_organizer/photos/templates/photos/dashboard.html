@@ -1,0 +1,102 @@
+{%  extends 'photos/main.html' %}
+
+{% block content %}
+
+<br>
+
+<div class="row">
+
+	<div class="col-md-7">
+		<h5>COLLECTIONS</h5>
+		<hr>
+		<div class="card card-body">
+
+			<table class="table table-sm">
+				<tr>
+					<th>Name</th>
+					<th>Photo Count</th>
+					<th>View Count</th>
+					<th>Remove</th>
+					<th>Share</th>
+					<th>Unshare</th>
+				</tr>
+
+				{% for collection in collections %}
+					<tr>
+						<td><a class="btn btn-sm btn-primary" href="{% url 'view_collection' collection.id %}">{{ collection.name }}</a></td>
+						<td>{{collection.photos.count}}</td>
+						<td>{{collection.views.count}}</td>
+						<td><a class="btn btn-sm btn-danger" href="{% url 'delete_collection' collection.id %}">Delete</a></td>
+						<td><a class="btn btn-sm btn-info" href="{% url 'share_collection' collection.id %}">Share</a></td>
+						<td><a class="btn btn-sm btn-info" href="{% url 'unshare_collection' collection.id %}">Unshare</a></td>
+
+					</tr>
+				{% endfor %}
+
+
+			</table>
+		</div>
+	</div>
+
+
+
+    <div class="col-md-7">
+		<h5>SHARED COLLECTIONS</h5>
+		<hr>
+		<div class="card card-body">
+
+			<table class="table table-sm">
+				<tr>
+					<th>Name</th>
+					<th>Photo Count</th>
+					<th>View Count</th>
+				</tr>
+
+				{% for collection in shared_collections %}
+					<tr>
+						<td><a class="btn btn-sm btn-primary" href="{% url 'view_collection' collection.id %}">{{ collection.name }}</a></td>
+						<td>{{collection.photos.count}}</td>
+						<td>{{collection.views.count}}</td>
+
+					</tr>
+				{% endfor %}
+
+
+			</table>
+		</div>
+	</div>
+
+    <div class="col-md-7">
+		<h5>SHARED VIEWS</h5>
+		<hr>
+		<div class="card card-body">
+
+			<table class="table table-sm">
+				<tr>
+					<th>Name</th>
+					<th>Photo Count</th>
+					<th>Tags</th>
+					<th>conjunctive</th>
+					<th>Latitude</th>
+					<th>Longitude</th>
+					<th>DateTime</th>
+				</tr>
+
+				{% for view in shared_views %}
+					<tr>
+						<td><a class="btn btn-sm btn-primary" href="{% url 'view_view' view.id %}">{{ view.name }}</a></td>
+						<td>{{view.photos.count}}</td>
+						<td>{{view.tags.all|join:", "}}</td>
+                        <td>{{view.conjunctive}}</td>
+                        <td>{{view.startLatitude}}, {{view.endLatitude}}</td>
+                        <td>{{view.startLongitude}}, {{view.endLongitude}}</td>
+                        <td>{{view.startTime}}, {{view.endTime}} </td>
+					</tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+
+</div>
+
+{% endblock %}

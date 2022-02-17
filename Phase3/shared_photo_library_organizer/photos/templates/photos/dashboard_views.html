@@ -1,0 +1,53 @@
+{%  extends 'photos/main_views.html' %}
+
+{% block content %}
+
+<br>
+
+<div class="row">
+
+	<div class="col-md-7">
+		<h5>VIEWS</h5>
+		<hr>
+		<div class="card card-body">
+
+			<table class="table table-sm">
+				<tr>
+					<th>Name</th>
+					<th>Photo Count</th>
+					<th>Tags</th>
+					<th>conjunctive</th>
+					<th>Latitude</th>
+					<th>Longitude</th>
+					<th>DateTime</th>
+                    <th>Update</th>
+                    <th>Remove</th>
+					<th>Share</th>
+					<th>Unshare</th>
+				</tr>
+
+				{% for view in myviews %}
+					<tr>
+						<td><a class="btn btn-sm btn-primary" href="{% url 'view_view' view.id %}">{{ view.name }}</a></td>
+						<td>{{view.photos.count}}</td>
+						<td>{{view.tags.all|join:", "}}</td>
+                        <td>{{view.conjunctive}}</td>
+                        <td>{{view.startLatitude}}, {{view.endLatitude}}</td>
+                        <td>{{view.startLongitude}}, {{view.endLongitude}}</td>
+                        <td>{{view.startTime}}, {{view.endTime}} </td>
+                        <td><a class="btn btn-sm btn-info" href="{% url 'update_view' view.id %}">Update</a></td>
+						<td><a class="btn btn-sm btn-danger" href="{% url 'delete_view' view.id %}">Delete</a></td>
+						<td><a class="btn btn-sm btn-info" href="{% url 'share_view' view.id %}">Share</a></td>
+						<td><a class="btn btn-sm btn-info" href="{% url 'unshare_view' view.id %}">Unshare</a></td>
+
+					</tr>
+				{% endfor %}
+
+
+			</table>
+		</div>
+	</div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,545 @@
+{%  extends 'photos/main.html' %}
+{% load static %}
+
+{% block content %}
+<br>
+<div class="row">
+    <div class="col-md-7 ">
+        <h5>ADD COLLECTION</h5>
+        <form id="addCollection" action="">
+          <div class="form-group">
+              <label for="colname"></label><input class="form-control" id="colname" type="text" name="name" placeholder="Name" required>
+          </div>
+          <button class="btn btn-primary form-control" type="submit">SUBMIT</button>
+        </form>
+    </div>
+
+	<div class="col-md-7">
+		<h5>COLLECTIONS</h5>
+		<hr>
+		<div class="card card-body">
+
+			<table id="collection_table"  class="table table-sm" >
+				<tr>
+					<th>Name</th>
+					<th>Photo Count</th>
+					<th>Remove</th>
+					<th>Share</th>
+					<th>Unshare</th>
+				</tr>
+
+				{% for collection in collections %}
+					<tr id="collection-{{ collection.id }}">
+						<td><a class="btn btn-sm btn-primary" href="{% url 'view_collection' collection.id %}">{{ collection.name }}</a></td>
+						<td>{{collection.photos.count}}</td>
+						<td><a class="btn btn-sm btn-danger"  href="javascript:void(0);" onclick="DeleteCollection({{ collection.id }})">Delete</a></td>
+						<td><a class="btn btn-sm btn-info" href="javascript:void(0);" onclick="Share_col({{ collection.id }})">Share</a></td>
+						<td><a class="btn btn-sm btn-info" href="javascript:void(0);" onclick="Unshare_col({{ collection.id }})">Unshare</a></td>
+					</tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+	<div class="col-md-7">
+		<h5>VIEWS</h5>
+		<hr>
+		<div class="card card-body">
+
+			<table id="view_table"  class="table table-sm" >
+				<tr>
+					<th>Name</th>
+                    <th>Collection Name</th>
+					<th>Photo Count</th>
+					<th>Tags</th>
+					<th>conjunctive</th>
+					<th>Latitude</th>
+					<th>Longitude</th>
+					<th>DateTime</th>
+                    <th>Update</th>
+                    <th>Remove</th>
+					<th>Share</th>
+					<th>Unshare</th>
+				</tr>
+
+				{% for view in views %}
+					<tr id="view-{{ view.id }}">
+						<td><a class="btn btn-sm btn-primary" href="{% url 'view_view' view.id %}">{{ view.name }}</a></td>
+                        <td>{{view.collection_name}}</td>
+						<td>{{view.photos.count}}</td>
+						<td>{{view.tags.all|join:", "}}</td>
+                        <td>{{view.conjunctive}}</td>
+                        <td>{{view.startLatitude}}, {{view.endLatitude}}</td>
+                        <td>{{view.startLongitude}}, {{view.endLongitude}}</td>
+                        <td>{{view.startTime}}, {{view.endTime}} </td>
+                        <td><a onclick="editView({{view.id}})" data-name="{{ view.name }}" data-tags="{{view.tags.all|join:","}}" data-conjunctive="{{ view.conjunctive}}" data-startLatitude="{{ view.startLatitude }}" data-endLatitude="{{ view.endLatitude }}" data-startLongitude="{{ view.startLongitude}}" data-endLongitude="{{ view.endLongitude}}" data-startTime="{{ view.startTime | date:'c' }}" data-endTime="{{ view.endTime | date:'c' }}" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#updateViewModal" id="update_view_but-{{ view.id }}">Update</a>
+						<td><a class="btn btn-sm btn-danger" href="javascript:void(0);" onclick="DeleteView({{ view.id }})">Delete</a></td>
+						<td><a class="btn btn-sm btn-info" href="javascript:void(0);" onclick="Share_view({{ view.id }})">Share</a></td>
+						<td><a class="btn btn-sm btn-info" href="javascript:void(0);" onclick="Unshare_view({{ view.id }})">Unshare</a></td>
+
+					</tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+
+    <div class="col-md-7">
+		<h5>SHARED COLLECTIONS</h5>
+		<hr>
+		<div class="card card-body">
+
+			<table class="table table-sm" id="shared_collections">
+				<tr>
+					<th>Name</th>
+					<th>Photo Count</th>
+					<th>View Count</th>
+				</tr>
+
+				{% for collection in shared_collections %}
+					<tr id="shared_col-{{ collection.id }}">
+						<td><a class="btn btn-sm btn-primary" href="{% url 'view_collection' collection.id %}">{{ collection.name }}</a></td>
+						<td>{{collection.photos.count}}</td>
+						<td>{{collection.views.count}}</td>
+					</tr>
+				{% endfor %}
+
+
+			</table>
+		</div>
+	</div>
+
+    <div class="col-md-7">
+		<h5>SHARED VIEWS</h5>
+		<hr>
+		<div class="card card-body">
+
+			<table class="table table-sm" id="shared_views">
+				<tr>
+					<th>Name</th>
+					<th>Photo Count</th>
+					<th>Tags</th>
+					<th>conjunctive</th>
+					<th>Latitude</th>
+					<th>Longitude</th>
+					<th>DateTime</th>
+				</tr>
+
+				{% for view in shared_views %}
+					<tr id="shared_view-{{ view.id }}">
+						<td><a class="btn btn-sm btn-primary" href="{% url 'view_view' view.id %}">{{ view.name }}</a></td>
+						<td>{{view.photos.count}}</td>
+						<td>{{view.tags.all|join:", "}}</td>
+                        <td>{{view.conjunctive}}</td>
+                        <td>{{view.startLatitude}}, {{view.endLatitude}}</td>
+                        <td>{{view.startLongitude}}, {{view.endLongitude}}</td>
+                        <td>{{view.startTime}}, {{view.endTime}} </td>
+					</tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="updateViewModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Update View</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <form method='POST' action="" enctype="multipart/form-data" novalidate="" id="id_ajax_updateView_form" >
+                        {% csrf_token %}
+                        <input class="form-control" id="vview-id" type="hidden" name="vview-id"/>
+                            <div class="mb-3">
+                                <label for="" class="form-label">View Name</label>
+                                <label for="vview_name"></label><input type="text" required name="vview_name" id="vview_name" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label>Conjunctive/Disjunctive</label>
+                                <label for="vview_conjunctive"></label><select name="vview_conjunctive" class="form-control" id="vview_conjunctive">
+                                    <option value='Conjunctive'>Conjunctive</option>
+                                    <option value='Disjunctive'>Disjunctive</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">Tags</label>
+                                <label for="vview_tags"></label><input type="text" required name="vview_tags" id="vview_tags" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">Start Latitude</label>
+                                <label for="vview_startLatitude"></label><input type="number" required name="vview_startLatitude" id="vview_startLatitude" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">End Latitude</label>
+                                <label for="vview_endLatitude"></label><input type="number" Required name="vview_endLatitude" id="vview_endLatitude" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">Start Longitude</label>
+                                <label for="vview_startLongitude"></label><input type="number" Required name="vview_startLongitude" id="vview_startLongitude" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">End Longitude</label>
+                                <label for="vview_endLongitude"></label><input type="number" Required name="vview_endLongitude" id="vview_endLongitude" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">Start DateTime</label>
+                                <label for="vview_startTime"></label><input type="date" Required name="vview_startTime" id="vview_startTime" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="" class="form-label">End DateTime</label>
+                                <label for="vview_endTime"></label><input type="date" Required name="vview_endTime" id="vview_endTime" class="form-control">
+                            </div>
+                        <button type='submit' class="btn btn-primary m-3 form-control " data-bs-toggle="modal" data-bs-target="#updateViewModal">Submit</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+    $(".modal").on("hidden.bs.modal", function(){
+    $(this).find('form').trigger('reset');
+});
+    function editView(id) {
+
+        const element = document.getElementById('update_view_but-'+id)
+        const name = element.getAttribute('data-name')
+        const tags = element.getAttribute('data-tags')
+        const conj = element.getAttribute('data-conjunctive')
+        const slat = element.getAttribute('data-startLatitude')
+        const elat = element.getAttribute('data-endLatitude')
+        const slong = element.getAttribute('data-startLongitude')
+        const elong = element.getAttribute('data-endLongitude')
+        const sdate = element.getAttribute('data-startTime')
+        const edate = element.getAttribute('data-endTime')
+
+        let str
+        if (conj){
+              str = 'Conjunctive'
+          }
+        else {
+            str = 'Disjunctive'
+        }
+      if (id) {
+
+        $('#vview-id').val(id);
+        $('#vview_name').val(name);
+        $('#vview_tags').val(tags);
+        $('#vview_conjunctive').val(str);
+        $('#vview_startLatitude').val(slat);
+        $('#vview_endLatitude').val(elat);
+        $('#vview_startLongitude').val(slong);
+        $('#vview_endLongitude').val(elong);
+        $('#vview_startTime').val(sdate);
+        $('#vview_endTime').val(edate);
+
+      }
+    }
+    $('#id_ajax_updateView_form').submit(function (e){
+        e.preventDefault();
+        const data = new FormData($('#id_ajax_updateView_form').get(0));
+        $.ajax({
+            url: "{% url 'update_view' %}", // same url 'action' in form
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            data:data,
+            success: function(data) {
+                const view_id = data['view_id'];
+                const view_name = data['view_name'];
+                const view_tags = data['view_tags'];
+                const view_conjunctive = data['view_conjunctive']
+                const view_startLatitude = data['view_startLatitude'];
+                const view_endLatitude = data['view_endLatitude'];
+                const view_startLongitude = data['view_startLongitude'];
+                const view_endLongitude = data['view_endLongitude'];
+                const view_startTime = data['view_startTime'];
+                const view_endTime = data['view_endTime'];
+                const view_collectionName= data['view_collectionName']
+                const view_photoCount= data['view_photoCount']
+                const view_data =
+						'<td><a class="btn btn-sm btn-primary" href="/view_view/ '+ view_id+'">' +view_name +'</a></td>'+
+                        '<td>'+view_collectionName+'</td>'+
+						'<td>' +view_photoCount+ '</td>'+
+						'<td>'+view_tags +'</td>'+
+                        '<td>'+view_conjunctive+'</td>'+
+                        '<td>'+view_startLatitude+', '+view_endLatitude+'</td>'+
+                        '<td>'+view_startLongitude+', '+view_endLongitude+'</td>'+
+                        '<td>'+view_startTime+', '+ view_endTime +'</td>'+
+                        '<td><a onclick="editView('+view_id+')" data-name="'+ view_name+'" data-tags="'+view_tags+'" data-conjunctive="'+view_conjunctive+'" data-startLatitude="'+view_startLatitude+'" data-endLatitude="'+view_endLatitude+'" data-startLongitude="'+view_startLongitude+'" data-endLongitude="'+view_endLongitude+'" data-startTime="'+view_startTime+'" data-endTime="'+view_endTime+'" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#updateViewModal" id="update_view_but-'+view_id+'">Update</a>'+
+						'<td><a class="btn btn-sm btn-danger" href="javascript:void(0);" onclick="DeleteView('+view_id+')">Delete</a></td>'+
+						'<td><a class="btn btn-sm btn-info" href="javascript:void(0);" onclick="Share_view('+view_id+')">Share</a></td>'+
+						'<td><a class="btn btn-sm btn-info" href="javascript:void(0);" onclick="Unshare_view('+view_id+')">Unshare</a></td>'
+                $("#view-" + view_id).html(view_data)
+
+            }
+        });
+    return false;
+    })
+
+</script>
+<script>
+    function Share_col(collection_id){
+        bootbox.prompt("Enter username:", function(result){
+        if (result) {
+            $.ajax({
+                type: "POST",
+                url: "{% url 'share_collection' %}",
+                data: {
+                    collection_id: collection_id,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    username: result
+                },
+                datatype: 'json',
+                success: function (data) {
+                    if (data['success']) {
+                        const myusername = data['myusername'];
+                        bootbox.alert({
+                        message: '<p style="color: #0b0b0b; text-align: center; margin-top: 50px">Collection shared with ' + myusername + '</p>'
+                    });
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<p style="color: #0b0b0b; text-align: center; margin-top: 50px">Collection is not shared.</p>'
+                        });
+                    }
+                }
+            });
+        }
+        if(result === '') {
+            bootbox.alert({
+                message: '<p style="color: #0b0b0b; text-align: center; margin-top: 50px">Give valid username!</p>'
+            });
+        }
+        });
+    }
+
+    function Unshare_col(collection_id){
+        bootbox.prompt("Enter username:", function(result){
+        if (result) {
+            $.ajax({
+                type: "POST",
+                url: "{% url 'unshare_collection' %}",
+                data: {
+                    collection_id: collection_id,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    username: result
+                },
+                datatype: 'json',
+                success: function (data) {
+                    if (data['success']) {
+                        const myusername = data['myusername'];
+                        bootbox.alert({
+                        message: '<p style="color: #0b0b0b; text-align: center; margin-top: 50px">Collection unshared with ' + myusername + '</p>'
+                    });
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<p style="color: #0b0b0b; text-align: center; margin-top: 50px">Collection is not unshared.</p>'
+                        });
+                    }
+                }
+            });
+        }
+        if(result === '') {
+            bootbox.alert({
+                message: '<p style="color: #0b0b0b; text-align: center; margin-top: 50px">Give valid username!</p>'
+            });
+        }
+        });
+    }
+
+</script>
+
+<script>
+    function DeleteCollection(collection_id){
+        bootbox.confirm({
+            title: "Delete Collection?",
+            message: '<p style="color: #0b0b0b; text-align: center"> Do you really want to delete collection?</p>',
+            buttons: {
+                cancel: {
+                    label: '<i class="fa fa-times"></i> Cancel'
+                },
+                confirm: {
+                    label: '<i class="fa fa-check"></i> Confirm'
+                }
+            },
+            callback: function (result) {
+                console.log(result)
+                if (result) {
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'delete_collection' %}",
+                        data: {
+                            collection_id: collection_id,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        datatype: 'json',
+                        success: function (data) {
+                            if (data['success']) {
+                                $("#collection-" + collection_id).remove()
+                            }
+                            const view_ids = data['view_ids']
+                            for (const i in view_ids){
+                                $("#view-" + view_ids[i]).remove()
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+</script>
+
+
+
+<script>
+$('#addCollection').submit(function (e){
+    e.preventDefault();
+    const colname = document.getElementById("colname").value;
+    $.ajax({
+        url : "{% url 'add_collection' %}",
+        type : 'POST',
+        data: {
+            'name': colname,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType : 'json',
+        success : function(data) {
+            const mycolid = data['mycol_id']
+            const mycolname = data['mycol_name']
+            const row_data = "<tr id="+'"collection-'+ mycolid + '"' + ">"+
+            '<td><a class="btn btn-sm btn-primary" href="/view_collection/' + mycolid + '">'+  mycolname  + '</a></td>' +
+            '<td>0</td>' +
+            '<td><a class="btn btn-sm btn-danger"  href="javascript:void(0);" onclick=DeleteCollection(' + mycolid + ")" +'>Delete</a></td>' +
+            '<td><a class="btn btn-sm btn-info" href="javascript:void(0);" onclick=Share_col(' + mycolid + ")" +'>Share</a></td>' +
+            '<td><a class="btn btn-sm btn-info" href="javascript:void(0);" onclick=Unshare_col(' + mycolid + ")" +'>Unshare</a></td>' +
+            '</tr>'
+            $('#collection_table tbody').append(row_data);
+            document.getElementById("addCollection").reset();
+        },
+        error : function() {
+            console.log('error');
+        }
+    });
+})
+</script>
+
+<script>
+    function Share_view(view_id){
+        bootbox.prompt("Enter username:", function(result){
+        if (result) {
+            $.ajax({
+                type: "POST",
+                url: "{% url 'share_view'%}",
+                data: {
+                    view_id: view_id,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    username: result
+                },
+                datatype: 'json',
+                success: function (data) {
+                    if (data['success']) {
+                        const myusername = data['myusername'];
+                        bootbox.alert({
+                        message: '<p style="color: #0b0b0b; text-align: center; margin-top: 50px">View shared with ' + myusername + '</p>'
+                    });
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<p style="color: #0b0b0b; text-align: center; margin-top: 50px">View is not shared.</p>'
+                        });
+                    }
+                }
+            });
+        }
+        if(result === '') {
+            bootbox.alert({
+                message: '<p style="color: #0b0b0b; text-align: center; margin-top: 50px">Give valid username!</p>'
+            });
+        }
+        });
+    }
+
+    function Unshare_view(view_id){
+        bootbox.prompt("Enter username:", function(result){
+        if (result) {
+            $.ajax({
+                type: "POST",
+                url: "{% url 'unshare_view' %}",
+                data: {
+                    view_id: view_id,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    username: result
+                },
+                datatype: 'json',
+                success: function (data) {
+                    if (data['success']) {
+                        const myusername = data['myusername'];
+                        bootbox.alert({
+                        message: '<p style="color: #0b0b0b; text-align: center; margin-top: 50px">View unshared with ' + myusername + '</p>'
+                    });
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<p style="color: #0b0b0b; text-align: center; margin-top: 50px">View is not unshared.</p>'
+                        });
+                    }
+                }
+            });
+        }
+        if(result === '') {
+            bootbox.alert({
+                message: '<p style="color: #0b0b0b; text-align: center; margin-top: 50px">Give valid username!</p>'
+            });
+        }
+        });
+    }
+
+</script>
+
+<script>
+    function DeleteView(view_id){
+        bootbox.confirm({
+            title: "Delete View?",
+            message: '<p style="color: #0b0b1b; text-align: -moz-center"> Do you really want to delete view?</p>',
+            buttons: {
+                cancel: {
+                    label: '<i class="fa fa-times"></i> Cancel'
+                },
+                confirm: {
+                    label: '<i class="fa fa-check"></i> Confirm'
+                }
+            },
+            callback: function (result) {
+                console.log(result)
+                if (result) {
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'delete_view' %}",
+                        data: {
+                            view_id: view_id,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        datatype: 'json',
+                        success: function (data) {
+                            if (data['success']) {
+                                $("#view-" + view_id).remove()
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+</script>
+
+{% endblock %}

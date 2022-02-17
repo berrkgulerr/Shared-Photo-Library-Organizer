@@ -1,0 +1,20 @@
+{"command":"login", "username":"onur", "password":"1308"}
+{"command":"createphoto", "path":"1.jpg"}
+{"command":"createphoto", "path":"2.jpg"}
+{"command":"addtag", "photo_id": "0", "tag": "ankara"}
+{"command":"addtag", "photo_id": "0", "tag": "malatya"}
+{"command":"addtag", "photo_id": "0", "tag": "aksaray"}
+{"command":"setlocation", "photo_id": "0", "long": "20", "latt":"35"}
+{"command":"setdatetime", "photo_id": "0", "date_time": "2007:10:14 16:27:13"}
+
+{"command":"login", "username":"berk", "password":"8520"}
+{"command":"createphoto", "path":"3.jpg"}
+{"command":"createphoto", "path":"4.jpg"}
+
+{"command":"removetag", "photo_id": "0", "tag": "ankara"}
+{"command":"removelocation", "photo_id": "0"}
+
+{"command":"addtag", "photo_id": "0", "tag": "ankara"}
+{"command":"setlocation", "photo_id": "0", "long": "20", "latt":"35"}
+
+{"command":"logout"}

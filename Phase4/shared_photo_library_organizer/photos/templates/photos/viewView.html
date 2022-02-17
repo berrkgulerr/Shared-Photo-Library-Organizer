@@ -1,0 +1,84 @@
+{%  extends 'photos/main.html' %}
+{% load static %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Gallery</title>
+
+    <style>
+        .image-thumbnail {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .list-group-item a {
+            text-decoration: none;
+            color: black;
+        }
+    </style>
+</head>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card">
+                <ul class="list-group list-group-flush">
+                    <a href="{% url 'home' %}" class="btn btn-dark btn-block btn-sm m-1">Go Back</a>
+                    <a class="btn btn-dark btn-block btn-sm m-1" href="{{ request.get_full_path }}">Refresh</a>
+                    <a href="{% url 'logout' %}" class="btn btn-dark btn-block btn-sm m-1">Logout</a>
+                </ul>
+            </div>
+
+        </div>
+        <div class="col-md-9">
+            <div class="row">
+
+                {% for photo in myphotos %}
+                <div class="col-md-4" id="photo-{{ photo.id }}">
+                    <div class="card my-2">
+                        <img class="image-thumbnail" src="{% static photo.image.url %}" id="view_photo_but-{{ photo.id }}" onclick="viewPhoto({{photo.id}})" data-name="{{ photo.name }}" data-tags="{{photo.tags.all|join:","}}" data-lat="{{ photo.latitude }}" data-long="{{ photo.longitude }}" data-date="{{ photo.datetime}}" alt="asd" data-bs-toggle="modal" data-bs-target="#myModal">
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" id="mymodalcontent">
+        <div class="modal-header">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <img class="modal-content" id="img01" src="" alt="">
+        <div id="divText"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+    function viewPhoto(id) {
+        const element = document.getElementById('view_photo_but-'+id)
+        const name = element.getAttribute('data-name')
+        const tags = element.getAttribute('data-tags')
+        const lat = element.getAttribute('data-lat')
+        const long = element.getAttribute('data-long')
+        const date = element.getAttribute('data-date')
+        const mysrc = element.getAttribute('src')
+        const modalImg = document.getElementById("img01")
+        modalImg.src = mysrc
+        document.getElementById('divText').innerHTML = "Name: " + name + "<br/>" + "Tags: " + tags + "<br/>" + "Lat: " + lat + "<br/>" + "Long: " + long + "<br/>" + "Date: " + date
+        console.log(mysrc)
+    }
+</script>
+
+
+</html>
+{% endblock %}

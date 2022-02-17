@@ -1,0 +1,21 @@
+{"command":"login", "username":"onur", "password":"1308"}
+{"command":"createcollection", "collection_name":"mycol"}
+{"command":"addphoto", "collection_id":"0", "photo_id":"0"}
+{"command":"addphoto", "collection_id":"0", "photo_id":"1"}
+
+{"command":"removephoto", "collection_id":"0", "photo_id":"0"}
+
+{"command":"login", "username":"berk", "password":"8520"}
+{"command":"createcollection", "collection_name":"mycol1"}
+{"command":"addphoto", "collection_id":"1", "photo_id":"2"}
+{"command":"addphoto", "collection_id":"1", "photo_id":"3"}
+
+{"command":"login", "username":"onur", "password":"1308"}
+{"command":"addphoto", "collection_id":"0", "photo_id":"0"}
+{"command":"collectionfetchphoto", "collection_id":"0", "photo_id":"0"}
+{"command":"addview", "collection_id":"0", "view_id":"0"}
+
+{"command":"login", "username":"berk", "password":"8520"}
+{"command":"photolist", "view_id":"0"}
+
+

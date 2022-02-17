@@ -1,0 +1,384 @@
+{%  extends 'photos/main.html' %}
+{% load static %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Gallery</title>
+    <style>
+        .image-thumbnail {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .list-group-item a {
+            text-decoration: none;
+            color: black;
+        }
+    </style>
+</head>
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card">
+                <ul class="list-group list-group-flush">
+                    <a href="{% url 'home' %}" class="btn btn-dark btn-block btn-sm m-1">Home</a>
+                    <button type="button" class="btn btn-dark btn-block btn-sm m-1" data-bs-toggle="modal" data-bs-target="#addPhotoModal">Add Photo</button>
+                    <button type="button" class="btn btn-dark btn-block btn-sm m-1" data-bs-toggle="modal" data-bs-target="#addViewModal">Add View</button>
+                    <a class="btn btn-dark btn-block btn-sm m-1" href="{{ request.get_full_path }}">Refresh</a>
+                    <a href="{% url 'logout' %}" class="btn btn-dark btn-block btn-sm m-1">Logout</a>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="row" id="photos">
+                {% for photo in myphotos %}
+                <div class="col-md-4" id="photo-{{ photo.id }}">
+                    <div class="card my-2">
+                        <img class="image-thumbnail" src="{% static photo.image.url %}" id="view_photo_but-{{ photo.id }}" onclick="viewPhoto({{photo.id}})" data-name="{{ photo.name }}" data-tags="{{photo.tags.all|join:","}}" data-lat="{{ photo.latitude }}" data-long="{{ photo.longitude }}" data-date="{{ photo.datetime}}" alt="asd" data-bs-toggle="modal" data-bs-target="#myModal">
+                        <a onclick="editPhoto({{photo.id}})" data-name="{{ photo.name }}" data-tags="{{photo.tags.all|join:","}}" data-lat="{{ photo.latitude }}" data-long="{{ photo.longitude }}" data-date="{{ photo.datetime | date:'c' }}" class="btn btn-outline-dark btn-sm m-1" data-bs-toggle="modal" data-bs-target="#updatePhotoModal" id="update_photo_but-{{ photo.id }}">Update</a>
+                        <a class="btn btn-outline-dark btn-sm m-1" href="javascript:void(0);" onclick="DeletePhoto({{ photo.id }})">Delete</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" id="mymodalcontent">
+        <div class="modal-header">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <img class="modal-content" id="img01" src="" alt="">
+        <div id="divText"></div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="addPhotoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Photo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <form method='POST' action="" enctype="multipart/form-data" novalidate="" id="id_ajax_addphoto_form" >
+                        {% csrf_token %}
+                        <input type="hidden" name="collection_id" value="{{ mycollection.id }}" id="collection_id" />
+                        <div class="form-group m-3">
+                            <label>Photo Name</label>
+                            <label for="photo_name"></label><input required name="photo_name" type="text" placeholder="Enter Photo Name" class="form-control" id="photo_name">
+                        </div>
+                        <div class="form-group m-3">
+                            <label>Upload image</label>
+                            <input required name="photo_image" type="file" multiple class="form-control-file" id="photo_img">
+                        </div>
+                        <div class="form-group m-3">
+                            <label>Tags</label>
+                            <label for="photo_tags"></label><input required name="photo_tags" type="text" placeholder="Enter Tags" id="photo_tags"
+                                                                   class="form-control">
+                        </div>
+                        <div class="form-group m-3">
+                            <label>Latitude</label>
+                            <label for="photo_lat"></label><input required name="photo_latitude" type="number" placeholder="Enter Latitude" id="photo_lat"
+                                                                  class="form-control">
+                        </div>
+                        <div class="form-group m-3">
+                            <label>Longitude</label>
+                            <label for="photo_long"></label><input required name="photo_longitude" type="number" placeholder="Enter Longitude" id="photo_long"
+                                                                   class="form-control">
+                        </div>
+                        <div class="form-group m-3">
+                            <label>DateTime</label>
+                            <label for="photo_date"></label><input required name="photo_datetime" type="date" placeholder="Enter DateTime" id="photo_date">
+                        </div>
+
+                        <button type='submit' class="btn btn-primary m-3 form-control " data-bs-toggle="modal" data-bs-target="#addPhotoModal">Submit</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="addViewModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add View</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <form method='POST' action="" enctype="multipart/form-data" novalidate="" id="id_ajax_addview_form">
+              {% csrf_token %}
+              <input type="hidden" name="collection_id" value="{{ mycollection.id }}" id="collection_id" />
+                        <div class="form-group m-3">
+                            <label>View Name</label>
+                            <label for="view_name"></label><input class="form-control" id="view_name" name="view_name" placeholder="Enter View Name" required
+                                                                  type="text">
+                        </div>
+                        <div class="form-group m-3">
+                            <label>Conjunctive/Disjunctive</label>
+                            <label for="view_conjunctive"></label><select name="view_conjunctive" class="form-control" id="view_conjunctive">
+                                <option value='Conjunctive'>Conjunctive</option>
+                                <option value='Disjunctive'>Disjunctive</option>
+                            </select>
+                        </div>
+                        <div class="form-group m-3">
+                            <label>Tags</label>
+                            <label for="view_tags"></label><input required name="view_tags" id="view_tags" type="text" placeholder="Enter Tags"
+                                                                  class="form-control">
+                        </div>
+
+                        <div class="form-group m-3">
+                            <label>Start Latitude</label>
+                            <label for="view_startLatitude"></label><input required name="view_startLatitude" id="view_startLatitude" type="number" placeholder="Enter Start Latitude"
+                                                                           class="form-control">
+                        </div>
+                        <div class="form-group m-3">
+                            <label>End Latitude</label>
+                            <label for="view_endLatitude"></label><input required name="view_endLatitude" id="view_endLatitude" type="number" placeholder="Enter End Latitude"
+                                                                         class="form-control">
+                        </div>
+                        <div class="form-group m-3">
+                            <label>Start Longitude</label>
+                            <label for="view_startLongitude"></label><input required name="view_startLongitude" id="view_startLongitude" type="number" placeholder="Enter Start Longitude"
+                                                                            class="form-control">
+                        </div>
+                        <div class="form-group m-3">
+                            <label>End Longitude</label>
+                            <label for="view_endLongitude"></label><input required name="view_endLongitude" id="view_endLongitude" type="number" placeholder="Enter End Longitude"
+                                                                          class="form-control">
+                        </div>
+                        <div class="form-group m-3">
+                            <label>Start DateTime</label>
+                            <label for="view_startTime"></label><input required name="view_startTime" id="view_startTime" type="date" placeholder="Enter Start DateTime">
+                        </div>
+                        <div class="form-group m-3">
+                            <label>End DateTime</label>
+                            <label for="view_endTime"></label><input required name="view_endTime" id="view_endTime" type="date" placeholder="Enter End DateTime">
+                        </div>
+                        <button type='submit' class="btn btn-primary m-3 form-control " data-bs-toggle="modal" data-bs-target="#addViewModal">Submit</button>
+                    </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="updatePhotoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Update Photo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <form method='POST' action="" enctype="multipart/form-data" novalidate="" id="id_ajax_updatePhoto_form" >
+                        {% csrf_token %}
+                        <input class="form-control" id="pphoto-id" type="hidden" name="pphoto-id"/>
+                        <div class="form-group m-3">
+                            <label>Photo Name</label>
+                            <label for="pphoto_name"></label><input required name="pphoto_name" type="text" placeholder="Enter Photo Name" id="pphoto_name"
+                                                                    class="form-control">
+                        </div>
+                        <div class="form-group m-3">
+                            <label>Tags</label>
+                            <label for="pphoto_tags"></label><input required name="pphoto_tags" type="text" placeholder="Enter Tags" id="pphoto_tags"
+                                                                    class="form-control">
+                        </div>
+                        <div class="form-group m-3">
+                            <label>Latitude</label>
+                            <label for="pphoto_latitude"></label><input required name="pphoto_latitude" type="number" placeholder="Enter Latitude" id="pphoto_latitude"
+                                                                        class="form-control">
+                        </div>
+                        <div class="form-group m-3">
+                            <label>Longitude</label>
+                            <label for="pphoto_longitude"></label><input required name="pphoto_longitude" type="number" placeholder="Enter Longitude" id="pphoto_longitude"
+                                                                         class="form-control">
+                        </div>
+                        <div class="form-group m-3">
+                            <label>DateTime</label>
+                            <label for="pphoto_datetime"></label><input required name="pphoto_datetime" type="date" placeholder="Enter DateTime" id="pphoto_datetime">
+                        </div>
+                        <button type='submit' class="btn btn-primary m-3 form-control " data-bs-toggle="modal" data-bs-target="#updatePhotoModal">Submit</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+</html>
+
+<script>
+    $(".modal").on("hidden.bs.modal", function(){
+    $(this).find('form').trigger('reset');
+});
+    function editPhoto(id) {
+
+        const element = document.getElementById('update_photo_but-'+id)
+        const name = element.getAttribute('data-name')
+        const tags = element.getAttribute('data-tags')
+        const lat = element.getAttribute('data-lat')
+        const long = element.getAttribute('data-long')
+        const date = element.getAttribute('data-date')
+      if (id) {
+        $('#pphoto-id').val(id);
+        $('#pphoto_name').val(name);
+        $('#pphoto_tags').val(tags);
+        $('#pphoto_latitude').val(lat);
+        $('#pphoto_longitude').val(long);
+        $('#pphoto_datetime').val(date);
+
+      }
+    }
+
+    function viewPhoto(id) {
+        const element = document.getElementById('view_photo_but-'+id)
+        const name = element.getAttribute('data-name')
+        const tags = element.getAttribute('data-tags')
+        const lat = element.getAttribute('data-lat')
+        const long = element.getAttribute('data-long')
+        const date = element.getAttribute('data-date')
+        const mysrc = element.getAttribute('src')
+        const modalImg = document.getElementById("img01")
+        modalImg.src = mysrc
+        document.getElementById('divText').innerHTML = "Name: " + name + "<br/>" + "Tags: " + tags + "<br/>" + "Lat: " + lat + "<br/>" + "Long: " + long + "<br/>" + "Date: " + date
+    }
+
+    $('#id_ajax_addview_form').submit(function (e){
+        e.preventDefault();
+        const data = new FormData($('#id_ajax_addview_form').get(0));
+        $.ajax({
+            url: "{% url 'add_view' %}", // same url 'action' in form
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            data:data,
+            success: function(data) {
+                bootbox.alert(data['message']);
+            }
+        });
+    return false;
+    })
+
+
+
+    $('#id_ajax_addphoto_form').submit(function (e){
+        e.preventDefault();
+        const data = new FormData($('#id_ajax_addphoto_form').get(0));
+        $.ajax({
+            url: "{% url 'add_photo' %}", // same url 'action' in form
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            data:data,
+            success: function(data) {
+                const photo_id = data['photo_id'];
+                const photo_name = data['photo_name'];
+                const url = data['url'];
+                const tags = data['tags'];
+                const lat = data['lat'];
+                const long = data['long'];
+                const date = data['date'];
+                const photo_data = '<div class="col-md-4" id="photo-'+ photo_id +'">' +
+                        '<div class="card my-2">'+
+                            '<img class="image-thumbnail" src="/static/'+ url +'"' +'onclick="viewPhoto(' + photo_id + ')" data-name="' +  photo_name + '" data-tags="' + tags + '" data-lat="' + lat + '" data-long="' + long + '" data-date="' + date + '" class="btn btn-outline-dark btn-sm m-1" data-bs-toggle="modal" data-bs-target="#myModal" id="view_photo_but-'+photo_id+'" alt="">' +
+                            '<a onclick="editPhoto(' + photo_id + ')" data-name="' +  photo_name + '" data-tags="' + tags + '" data-lat="' + lat + '" data-long="' + long + '" data-date="' + date + '" class="btn btn-outline-dark btn-sm m-1" data-bs-toggle="modal" data-bs-target="#updatePhotoModal" id="update_photo_but-'+photo_id+'">Update</a>' +
+                            '<a class="btn btn-outline-dark btn-sm m-1" href="javascript:void(0);" onclick="DeletePhoto(' + photo_id + ')">Delete</a>' +
+                        '</div> </div>'
+                $('#photos').append(photo_data)
+            }
+        });
+    return false;
+    })
+
+
+
+
+    $('#id_ajax_updatePhoto_form').submit(function (e){
+        e.preventDefault();
+        const data = new FormData($('#id_ajax_updatePhoto_form').get(0));
+        $.ajax({
+            url: "{% url 'update_photo' %}", // same url 'action' in form
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            data:data,
+            success: function(data) {
+                const photo_id = data['photo_id'];
+                const photo_name = data['photo_name'];
+                const url = data['url'];
+                const tags = data['tags'];
+                const lat = data['lat'];
+                const long = data['long'];
+                const date = data['date'];
+                const photo_data =
+                        '<div class="card my-2">'+
+                            '<img class="image-thumbnail" src="/static/'+ url +'"' +'onclick="viewPhoto(' + photo_id + ')" data-name="' +  photo_name + '" data-tags="' + tags + '" data-lat="' + lat + '" data-long="' + long + '" data-date="' + date + '" class="btn btn-outline-dark btn-sm m-1" data-bs-toggle="modal" data-bs-target="#myModal" id="view_photo_but-'+photo_id+'" alt="">' +
+                            '<a onclick="editPhoto(' + photo_id + ')" data-name="' +  photo_name + '" data-tags="' + tags + '" data-lat="' + lat + '" data-long="' + long + '" data-date="' + date + '" class="btn btn-outline-dark btn-sm m-1" data-bs-toggle="modal" data-bs-target="#updatePhotoModal" id="update_photo_but-'+photo_id+'">Update</a>' +
+                            '<a class="btn btn-outline-dark btn-sm m-1" href="javascript:void(0);" onclick="DeletePhoto(' + photo_id + ')">Delete</a>' +
+                        '</div> </div>'
+                $("#photo-" + photo_id).html(photo_data)
+
+            }
+        });
+    return false;
+    })
+
+</script>
+
+<script>
+
+    function DeletePhoto(photo_id){
+        bootbox.confirm({
+            title: "Delete Review?",
+            message: '<p style="color: #0b0b0b; text-align: center"> Do you really want to delete record? This cannot be undone.</p>',
+            buttons: {
+                cancel: {
+                    label: '<i class="fa fa-times"></i> Cancel'
+                },
+                confirm: {
+                    label: '<i class="fa fa-check"></i> Confirm'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'delete_photo' %}",
+                        data: {
+                            photo_id: photo_id,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        datatype: 'json',
+                        success: function (data) {
+                            if (data['success']) {
+                                $("#photo-" + photo_id).remove()
+                            }
+                        }
+                    });
+                } else {
+                    bootbox.alert({
+                        message: '<p style="color: #0b0b0b; text-align: center; margin-top: 50px">Photo not deleted.</p>'
+                    });
+                }
+            }
+        });
+    }
+</script>
+
+{% endblock %}

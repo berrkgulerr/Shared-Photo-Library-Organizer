@@ -1,0 +1,8 @@
+{"command":"register", "username":"onur", "password":"1308"}
+{"command":"login", "username":"onur", "password":"1308"}
+{"command":"logout"}
+
+{"command":"register", "username":"berk", "password":"8520"}
+{"command":"login", "username":"berk", "password":"8520"}
+{"command":"logout"}
+
